@@ -15,7 +15,11 @@ int SnakePointWidth; // Snake width coordinate //
 int FoodTabHeight; // Food height coordinate //
 int FoodTabWidth; // Food width coordinate //
 int button; // Controls //
-char direction = 'd'; // w - up, s - down, a - left, d - right //
+char direction = 'd'; // Snake direction; w - up, s - down, a - left, d - right //
+int SnakeMoves = 0; // Amount of moves that snake do during the game //
+int SnakeLength = 5; // Base snake length //
+int OldSnakeHeight[5000]; // Previous moves //
+int OldSnakeWidth[5000]; // Previous moves //
 
 
 int main() 
@@ -25,9 +29,9 @@ int main()
 
 	// Empty fields //
 
-	for (int i = 0; i < TabHeight; i++) { // Filling array with empty fields
+	for (int i = 0; i < TabHeight; i++) { // Filling array with empty fields //
 		for (int j = 0; j < TabWidth; j++) {
-			GameTab[i][j] = "empty"; // Filling with word 'empty'
+			GameTab[i][j] = "empty"; // Filling with word 'empty' //
 		}
 	}
 
@@ -51,6 +55,12 @@ int main()
 
 
 	for (;;) {
+		
+		// Snake length //
+
+		SnakeMoves++; // Amount of moves that snake do //
+		OldSnakeHeight[SnakeMoves] = SnakePointHeight; // History of moves height coordinate // 
+		OldSnakeWidth[SnakeMoves] = SnakePointWidth; // History of moves width coordinate // 
 
 		// Endgame rules //
 
@@ -59,7 +69,9 @@ int main()
 		if (SnakePointHeight == TabHeight) break; // Bottom border //
 		if (SnakePointHeight == -1) break; // Top border //
 
-		GameTab[SnakePointHeight][SnakePointWidth] = "snake";
+		GameTab[SnakePointHeight][SnakePointWidth] = "snake"; // First segment of snake, it's head //
+
+		GameTab[OldSnakeHeight[SnakeMoves - SnakeLength]][OldSnakeWidth[SnakeMoves - SnakeLength]] = "empty"; // Old coordinates should be empty when snake moves //
 
 		system("CLS");
 

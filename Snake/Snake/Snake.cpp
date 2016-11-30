@@ -17,7 +17,7 @@ int FoodTabWidth; // Food width coordinate //
 int button; // Controls //
 char direction = 'd'; // Snake direction; w - up, s - down, a - left, d - right //
 int SnakeMoves = 0; // Amount of moves that snake do during the game //
-int SnakeLength = 5; // Base snake length //
+int SnakeLength = 2; // Base snake length //
 int OldSnakeHeight[5000]; // Previous moves //
 int OldSnakeWidth[5000]; // Previous moves //
 
@@ -62,12 +62,17 @@ int main()
 		OldSnakeHeight[SnakeMoves] = SnakePointHeight; // History of moves height coordinate // 
 		OldSnakeWidth[SnakeMoves] = SnakePointWidth; // History of moves width coordinate // 
 
-		// Endgame rules //
+		// Eating //
 
-		if (SnakePointWidth == TabWidth) break; // Right border //
-		if (SnakePointWidth == -1) break; // Left border //
-		if (SnakePointHeight == TabHeight) break; // Bottom border //
-		if (SnakePointHeight == -1) break; // Top border //
+		if (GameTab[SnakePointHeight][SnakePointWidth] == GameTab[FoodTabHeight][FoodTabWidth]) {
+			SnakeLength++;
+			do {
+				FoodTabHeight = rand() % (TabHeight - 2) + 1; // Randomize food height location from 1 to TabHeight-2 //
+				FoodTabWidth = rand() % (TabWidth - 2) + 1; // Randomize food width location from 1 to TabWidth-2 //
+			} while (GameTab[FoodTabHeight][FoodTabWidth] != "empty"); // Cannot roll same height and width as snake //
+
+			GameTab[FoodTabHeight][FoodTabWidth] = "food"; // Filling one field with word 'food' //
+		}
 
 		GameTab[SnakePointHeight][SnakePointWidth] = "snake"; // First segment of snake, it's head //
 
@@ -97,7 +102,7 @@ int main()
 			std::cout << "--";
 		}
 
-		Sleep(500);
+		Sleep(100);
 
 		// Controls //
 
@@ -114,6 +119,15 @@ int main()
 		if (direction == 's') SnakePointHeight++;
 		if (direction == 'a') SnakePointWidth--;
 		if (direction == 'd') SnakePointWidth++;
+
+		// Game over rules //
+
+		if (SnakePointWidth == TabWidth) break; // Right border //
+		if (SnakePointWidth == -1) break; // Left border //
+		if (SnakePointHeight == TabHeight) break; // Bottom border //
+		if (SnakePointHeight == -1) break; // Top border //
+
+		if (GameTab[SnakePointHeight][SnakePointWidth] == "snake") break;
 
 	}
 

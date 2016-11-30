@@ -14,45 +14,47 @@ int SnakePointHeight; // Snake height coordinate //
 int SnakePointWidth; // Snake width coordinate //
 int FoodTabHeight; // Food height coordinate //
 int FoodTabWidth; // Food width coordinate //
+int button; // Controls //
+char direction = 'd'; // w - up, s - down, a - left, d - right //
 
 
 int main() 
 {
 
-		// Game fields 'logical' definitions //
+	// Game fields 'logical' definitions //
 
-		// Empty fields //
+	// Empty fields //
 
-		for (int i = 0; i < TabHeight; i++) { // Filling array with empty fields
-			for (int j = 0; j < TabWidth; j++) {
-				GameTab[i][j] = "empty"; // Filling with word 'empty'
-			}
+	for (int i = 0; i < TabHeight; i++) { // Filling array with empty fields
+		for (int j = 0; j < TabWidth; j++) {
+			GameTab[i][j] = "empty"; // Filling with word 'empty'
 		}
+	}
 
-		// Snake start point //
+	// Snake start point //
 
-		SnakePointHeight = TabHeight - 13; // Middle //
-		SnakePointWidth = TabWidth - 13; // Middle //
-		GameTab[SnakePointHeight][SnakePointWidth] = "snake"; // Filling snake start point with word 'snake' //
-
-
-		// Food location //
-
-		srand(time(NULL)); // True RNG //
-
-		do {
-			FoodTabHeight = rand() % (TabHeight - 2) + 1; // Randomize food height location from 1 to TabHeight-2 //
-			FoodTabWidth = rand() % (TabWidth - 2) + 1; // Randomize food width location from 1 to TabWidth-2 //
-		} while (GameTab[FoodTabHeight][FoodTabWidth] != "empty"); // Cannot roll same height and width as snake //
-
-		GameTab[FoodTabHeight][FoodTabWidth] = "food"; // Filling one field with word 'food' //
+	SnakePointHeight = TabHeight - 13; // Middle //
+	SnakePointWidth = TabWidth - 13; // Middle //
+	GameTab[SnakePointHeight][SnakePointWidth] = "snake"; // Filling snake start point with word 'snake' //
 
 
-		for (;;) {
+	// Food location //
+
+	srand(time(NULL)); // True RNG //
+
+	do {
+		FoodTabHeight = rand() % (TabHeight - 2) + 1; // Randomize food height location from 1 to TabHeight-2 //
+		FoodTabWidth = rand() % (TabWidth - 2) + 1; // Randomize food width location from 1 to TabWidth-2 //
+	} while (GameTab[FoodTabHeight][FoodTabWidth] != "empty"); // Cannot roll same height and width as snake //
+
+	GameTab[FoodTabHeight][FoodTabWidth] = "food"; // Filling one field with word 'food' //
+
+
+	for (;;) {
 
 		// Endgame rules //
-			
-		if (SnakePointWidth == TabWidth - 2) break; // Right border //
+
+		if (SnakePointWidth == TabWidth) break; // Right border //
 		if (SnakePointWidth == -1) break; // Left border //
 		if (SnakePointHeight == TabHeight) break; // Bottom border //
 		if (SnakePointHeight == -1) break; // Top border //
@@ -64,26 +66,42 @@ int main()
 
 		// Main game board //
 
-		for (int i = 0; i < TabWidth; i++) { // Top border //
+		for (int i = 0; i < TabWidth+1; i++) { // Top border //
 			std::cout << "--";
 		}
 
 		for (int i = 0; i < TabHeight; i++) { // Left border //
-			std::cout << std::endl << "||";
-			for (int j = 0; j < TabWidth - 2; j++) { // Space between borders - play field //
+			std::cout << std::endl << "|";
+			for (int j = 0; j < TabWidth; j++) { // Space between borders - play field //
 				if (GameTab[i][j] == "empty") std::cout << "  "; // Filling board with empty spaces //
 				if (GameTab[i][j] == "snake") std::cout << "@@"; // Filling board with snake fields //
 				if (GameTab[i][j] == "food") std::cout << "XX"; // Filling board with food field //
 
 			}
-			std::cout << "||"; // Right border //
+			std::cout << "|"; // Right border //
 		}
 		std::cout << std::endl;
-		for (int i = 0; i < TabWidth; i++) { // Bottom border //
+		for (int i = 0; i < TabWidth+1; i++) { // Bottom border //
 			std::cout << "--";
 		}
 
 		Sleep(500);
+
+		// Controls //
+
+		if (_kbhit()) {
+			button = _getch();
+
+			if (button == 119) direction = 'w';
+			if (button == 115) direction = 's';
+			if (button == 97) direction = 'a';
+			if (button == 100) direction = 'd';
+		}
+
+		if (direction == 'w') SnakePointHeight--;
+		if (direction == 's') SnakePointHeight++;
+		if (direction == 'a') SnakePointWidth--;
+		if (direction == 'd') SnakePointWidth++;
 
 	}
 

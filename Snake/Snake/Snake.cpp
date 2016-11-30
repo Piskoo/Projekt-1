@@ -6,7 +6,9 @@
 #include <cstdlib>
 #include <windows.h>
 	
-void Carriage(int x, int y) {
+// Anti-flickering script - Carriage return //
+
+void Carriage(int y, int x) {
 	HANDLE hCon;
 	COORD dwPos;
 	dwPos.X = x;
@@ -14,7 +16,6 @@ void Carriage(int x, int y) {
 	hCon = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(hCon, dwPos);
 }
-
 
 const int TabWidth = 25; // Board width //
 const int TabHeight = 25; // Board height //
@@ -24,11 +25,14 @@ int SnakePointWidth; // Snake width coordinate //
 int FoodTabHeight; // Food height coordinate //
 int FoodTabWidth; // Food width coordinate //
 int button; // Controls //
-char direction = 'd'; // Snake direction; w - up, s - down, a - left, d - right //
+char direction = 'd'; // Snake direction; w - up, s - down, a - left, d - right(default) //
 int SnakeMoves = 0; // Amount of moves that snake do during the game //
 int SnakeLength = 2; // Base snake length //
 int OldSnakeHeight[5000]; // Previous moves //
 int OldSnakeWidth[5000]; // Previous moves //
+
+// Game Visuals // 
+
 char SnakeCode = 219;
 char LeftRightBorder = 186;
 char TopBottomBorder = 205;
@@ -36,8 +40,6 @@ char TopLeftCorner = 201;
 char TopRightCorner = 187;
 char BottomLeftCorner = 200;
 char BottomRightCorner = 188;
-
-
 
 int main() 
 {
@@ -58,7 +60,6 @@ int main()
 	SnakePointWidth = TabWidth - 13; // Middle //
 	GameTab[SnakePointHeight][SnakePointWidth] = "snake"; // Filling snake start point with word 'snake' //
 
-
 	// Food location //
 
 	srand(time(NULL)); // True RNG //
@@ -70,6 +71,32 @@ int main()
 
 	GameTab[FoodTabHeight][FoodTabWidth] = "food"; // Filling one field with word 'food' //
 
+	Carriage(0, 0);
+
+	// Main game board //
+
+	std::cout << TopLeftCorner;
+	for (int i = 0; i < TabWidth; i++) { // Top border //
+		std::cout << TopBottomBorder << TopBottomBorder;
+	}
+	std::cout << TopRightCorner;
+
+	for (int i = 0; i < TabHeight; i++) { // Left border //
+		std::cout << std::endl << LeftRightBorder;
+		for (int j = 0; j < TabWidth; j++) { // Space between borders - play field //
+			if (GameTab[i][j] == "empty") std::cout << "  "; // Filling board with empty spaces //
+			if (GameTab[i][j] == "snake") std::cout << SnakeCode << SnakeCode; // Filling board with snake fields //
+			if (GameTab[i][j] == "food") std::cout << "XX"; // Filling board with food field //
+
+		}
+		std::cout << LeftRightBorder; // Right border //
+	}
+	std::cout << std::endl;
+	std::cout << BottomLeftCorner;
+	for (int i = 0; i < TabWidth; i++) { // Bottom border //
+		std::cout << TopBottomBorder << TopBottomBorder;
+	}
+	std::cout << BottomRightCorner;
 
 	for (;;) {
 		
@@ -89,39 +116,18 @@ int main()
 			} while (GameTab[FoodTabHeight][FoodTabWidth] != "empty"); // Cannot roll same height and width as snake //
 
 			GameTab[FoodTabHeight][FoodTabWidth] = "food"; // Filling one field with word 'food' //
+			Carriage(FoodTabHeight + 1, FoodTabWidth * 2 + 1);
+			std::cout << "XX";
+			
 		}
 
 		GameTab[SnakePointHeight][SnakePointWidth] = "snake"; // First segment of snake, it's head //
+		Carriage(SnakePointHeight + 1, SnakePointWidth * 2 + 1);
+		std::cout << SnakeCode << SnakeCode;
 
 		GameTab[OldSnakeHeight[SnakeMoves - SnakeLength]][OldSnakeWidth[SnakeMoves - SnakeLength]] = "empty"; // Old coordinates should be empty when snake moves //
-
-		Carriage(0, 0);
-
-		// Main game board //
-
-			std::cout << TopLeftCorner;
-		for (int i = 0; i < TabWidth; i++) { // Top border //
-			std::cout << TopBottomBorder << TopBottomBorder;
-		}
-			std::cout << TopRightCorner;
-
-		for (int i = 0; i < TabHeight; i++) { // Left border //
-			std::cout << std::endl << LeftRightBorder;
-			for (int j = 0; j < TabWidth; j++) { // Space between borders - play field //
-				if (GameTab[i][j] == "empty") std::cout << "  "; // Filling board with empty spaces //
-				if (GameTab[i][j] == "snake") std::cout << SnakeCode << SnakeCode; // Filling board with snake fields //
-				if (GameTab[i][j] == "food") std::cout << "XX"; // Filling board with food field //
-
-			}
-			std::cout << LeftRightBorder; // Right border //
-		}
-			std::cout << std::endl;
-			std::cout << BottomLeftCorner;
-		for (int i = 0; i < TabWidth; i++) { // Bottom border //
-			std::cout << TopBottomBorder << TopBottomBorder;
-		}
-			std::cout << BottomRightCorner;
-
+		Carriage(OldSnakeHeight[SnakeMoves - SnakeLength] + 1, OldSnakeWidth[SnakeMoves - SnakeLength] * 2 + 1);
+		std::cout << "  ";
 		Sleep(100);
 
 		// Controls //
@@ -137,7 +143,7 @@ int main()
 
 		// Snake shift //
 
-		if (direction == 'w') SnakePointHeight--; 
+		if (direction == 'w') SnakePointHeight--;
 		if (direction == 's') SnakePointHeight++;
 		if (direction == 'a') SnakePointWidth--;
 		if (direction == 'd') SnakePointWidth++;
@@ -148,8 +154,7 @@ int main()
 		if (SnakePointWidth == -1) break; // Left border //
 		if (SnakePointHeight == TabHeight) break; // Bottom border //
 		if (SnakePointHeight == -1) break; // Top border //
-
-		if (GameTab[SnakePointHeight][SnakePointWidth] == "snake") break; // Eat itself // 
+		if (GameTab[SnakePointHeight][SnakePointWidth] == "snake") break; // Eats itself // 
 
 	}
 

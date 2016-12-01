@@ -9,7 +9,7 @@
 	
 // Anti-flickering script - Carriage return //
 
-void Carriage(int y, int x) {
+void Carriage(int y, int x) { // Move carriage anywhere //
 	HANDLE hCon;
 	COORD dwPos;
 	dwPos.X = x;
@@ -32,8 +32,8 @@ int SnakeLength = 2; // Base snake length //
 int OldSnakeHeight[5000]; // Previous moves //
 int OldSnakeWidth[5000]; // Previous moves //
 int GameDifficulty = 2; // Game difficulty //
-int GameSpeed = 300;
-float Score = 0;
+int GameSpeed = 200; // Time in ms that is used in sleep function inside endless loop //
+float Score = 0; // Endgame score, float becouse of the multipliers //
 
 // Game Visuals // 
 
@@ -60,7 +60,7 @@ int main()
 
 	std::cout << "Choose game difficulty (1 - easy, 2 - normal, 3 - hard, 4 - insane)" << std::endl << "Difficulty score multipliers:" << std::endl << "0.5x - easy" << std::endl << "1.0x - normal" << std::endl << "1.5x - hard" << std::endl << "2.0x - insane" << std::endl;
 	GameDifficulty = _getch(); 
-	if (GameDifficulty == '1') GameSpeed = 300; // Setting sleep value for each of the difficulties //
+	if (GameDifficulty == '1') GameSpeed = 300; // Setting refresh rate for each of the difficulties //
 	else if (GameDifficulty == '2') GameSpeed = 200;
 	else if (GameDifficulty == '3') GameSpeed = 100;
 	else if (GameDifficulty == '4') GameSpeed = 50;
@@ -73,6 +73,18 @@ int main()
 	system("cls");
 	std::cout << "Press any key to start...";
 	_getch();
+	system("cls");
+	std::cout << "Prepare";
+	Sleep(2000);
+	system("cls");
+	std::cout << "3";
+	Sleep(1000);
+	system("cls");
+	std::cout << "2";
+	Sleep(1000);
+	system("cls");
+	std::cout << "1";
+	Sleep(1000);
 	system("cls");
 
 
@@ -107,8 +119,8 @@ int main()
 
 	// Main game board //
 
-	std::cout << TopLeftCorner;
-	for (int i = 0; i < TabWidth; i++) { // Top border //
+	std::cout << TopLeftCorner; // Top border //
+	for (int i = 0; i < TabWidth; i++) { 
 		std::cout << TopBottomBorder << TopBottomBorder;
 	}
 	std::cout << TopRightCorner;
@@ -124,8 +136,8 @@ int main()
 		std::cout << LeftRightBorder; // Right border //
 	}
 	std::cout << std::endl;
-	std::cout << BottomLeftCorner;
-	for (int i = 0; i < TabWidth; i++) { // Bottom border //
+	std::cout << BottomLeftCorner; // Bottom border //
+	for (int i = 0; i < TabWidth; i++) { 
 		std::cout << TopBottomBorder << TopBottomBorder;
 	}
 	std::cout << BottomRightCorner;
@@ -140,8 +152,8 @@ int main()
 
 		// Eating //
 
-		if (GameTab[SnakePointHeight][SnakePointWidth] == GameTab[FoodTabHeight][FoodTabWidth]) {
-			SnakeLength++;
+		if (GameTab[SnakePointHeight][SnakePointWidth] == GameTab[FoodTabHeight][FoodTabWidth]) { // If snake ate food then //
+			SnakeLength++; // Increase snake length //
 			do {
 				FoodTabHeight = rand() % (TabHeight - 2) + 1; // Randomize food height location from 1 to TabHeight-2 //
 				FoodTabWidth = rand() % (TabWidth - 2) + 1; // Randomize food width location from 1 to TabWidth-2 //
@@ -156,16 +168,15 @@ int main()
 		GameTab[SnakePointHeight][SnakePointWidth] = "snake"; // First segment of snake, it's head //
 		Carriage(SnakePointHeight + 1, SnakePointWidth * 2 + 1); // Overwrite old values with snake //
 		std::cout << SnakeCode << SnakeCode;
-
 		GameTab[OldSnakeHeight[SnakeMoves - SnakeLength]][OldSnakeWidth[SnakeMoves - SnakeLength]] = "empty"; // Old coordinates should be empty when snake moves //
 		Carriage(OldSnakeHeight[SnakeMoves - SnakeLength] + 1, OldSnakeWidth[SnakeMoves - SnakeLength] * 2 + 1); // Overwrite old values with double empty space //
 		std::cout << "  ";
 
-		Sleep(GameSpeed);
+		Sleep(GameSpeed); // Refresh rate //
 
 		// Controls //
 
-		if (_kbhit()) {
+		if (_kbhit()) { // When key was hit then //
 			button = _getch();
 
 			if (button == 119 && (direction == 'a' || direction == 'd')) direction = 'w'; // If player hit 'w' then snake direction will be up //
@@ -176,10 +187,10 @@ int main()
 
 		// Snake shift //
 
-		if (direction == 'w') SnakePointHeight--;
-		if (direction == 's') SnakePointHeight++;
-		if (direction == 'a') SnakePointWidth--;
-		if (direction == 'd') SnakePointWidth++;
+		if (direction == 'w') SnakePointHeight--; // Start moving up //
+		if (direction == 's') SnakePointHeight++; // Start moving down //
+		if (direction == 'a') SnakePointWidth--; // Start moving left //
+		if (direction == 'd') SnakePointWidth++; // Start moving right //
 
 		// Game over rules //
 
@@ -220,9 +231,9 @@ int main()
 
 	_getch();
 
-	// Anti 'close game by accident' //
+	// Anti 'close game by accident' stuff //
 
-	Sleep(500);
+	Sleep(1000);
 	_getch();
 
     return 0;

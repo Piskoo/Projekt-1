@@ -5,6 +5,7 @@
 #include <time.h>
 #include <cstdlib>
 #include <windows.h>
+#include <cmath>
 	
 // Anti-flickering script - Carriage return //
 
@@ -30,6 +31,9 @@ int SnakeMoves = 0; // Amount of moves that snake do during the game //
 int SnakeLength = 2; // Base snake length //
 int OldSnakeHeight[5000]; // Previous moves //
 int OldSnakeWidth[5000]; // Previous moves //
+int GameDifficulty = 2; // Game difficulty //
+int GameSpeed = 300;
+float Score = 0;
 
 // Game Visuals // 
 
@@ -40,10 +44,37 @@ char TopLeftCorner = 201;
 char TopRightCorner = 187;
 char BottomLeftCorner = 200;
 char BottomRightCorner = 188;
-char FoodCode = 178;
+char FoodCode = 175;
 
 int main() 
 {
+	
+	// How to control snake instructions //
+
+	std::cout << "Controls:" << std::endl << "w - up" << std::endl << "s - down" << std::endl << "a - left" << std::endl << "d - right" << std::endl;
+	std::cout << std::endl << "Press any key to continue...";
+	_getch();
+	system("cls");
+
+	// Game difficulty //
+
+	std::cout << "Choose game difficulty (1 - easy, 2 - normal, 3 - hard, 4 - insane)" << std::endl << "Difficulty score multipliers:" << std::endl << "0.5x - easy" << std::endl << "1.0x - normal" << std::endl << "1.5x - hard" << std::endl << "2.0x - insane" << std::endl;
+	GameDifficulty = _getch(); 
+	if (GameDifficulty == '1') GameSpeed = 300; // Setting sleep value for each of the difficulties //
+	else if (GameDifficulty == '2') GameSpeed = 200;
+	else if (GameDifficulty == '3') GameSpeed = 100;
+	else if (GameDifficulty == '4') GameSpeed = 50;
+	else if (GameDifficulty != '1' || GameDifficulty != '2' || GameDifficulty != '3' || GameDifficulty != '4') {
+		GameDifficulty = '2';
+	}
+
+	// Start when you're ready //
+
+	system("cls");
+	std::cout << "Press any key to start...";
+	_getch();
+	system("cls");
+
 
 	// Game fields 'logical' definitions //
 
@@ -87,7 +118,7 @@ int main()
 		for (int j = 0; j < TabWidth; j++) { // Space between borders - play field //
 			if (GameTab[i][j] == "empty") std::cout << "  "; // Filling board with empty spaces //
 			if (GameTab[i][j] == "snake") std::cout << SnakeCode << SnakeCode; // Filling board with snake fields //
-			if (GameTab[i][j] == "food") std::cout << FoodCode << FoodCode; // Filling board with food field //
+			if (GameTab[i][j] == "food") std::cout << "@" << FoodCode; // Filling board with food field //
 
 		}
 		std::cout << LeftRightBorder; // Right border //
@@ -118,7 +149,7 @@ int main()
 
 			GameTab[FoodTabHeight][FoodTabWidth] = "food"; // Filling one field with word 'food' //
 			Carriage(FoodTabHeight + 1, FoodTabWidth * 2 + 1); // Overwrite old values with food //
-			std::cout << FoodCode << FoodCode;
+			std::cout << "@" << FoodCode;
 			
 		}
 
@@ -129,7 +160,8 @@ int main()
 		GameTab[OldSnakeHeight[SnakeMoves - SnakeLength]][OldSnakeWidth[SnakeMoves - SnakeLength]] = "empty"; // Old coordinates should be empty when snake moves //
 		Carriage(OldSnakeHeight[SnakeMoves - SnakeLength] + 1, OldSnakeWidth[SnakeMoves - SnakeLength] * 2 + 1); // Overwrite old values with double empty space //
 		std::cout << "  ";
-		Sleep(100);
+
+		Sleep(GameSpeed);
 
 		// Controls //
 
@@ -165,10 +197,32 @@ int main()
 	std::cout << "GAME OVER";
 	Carriage(TabHeight - 12, TabWidth - 1);
 	std::cout << "SCORE";
-	Carriage(TabHeight - 11, TabWidth + 1);
-	std::cout << SnakeLength;
+
+	// Score multipliers //
+
+	if (GameDifficulty == '1')
+		Score = SnakeLength * 0.5;
+	if (GameDifficulty == '2')
+		Score = SnakeLength;
+	if (GameDifficulty == '3')
+		Score = SnakeLength * 1.5;
+	if (GameDifficulty == '4')
+		Score = SnakeLength * 2;
+
+	// Different carriage locations if score is decimal fraction //
+
+	if (fmod(Score,1) == 0)
+		Carriage(TabHeight - 11, TabWidth + 1);
+	else
+		Carriage(TabHeight - 11, TabWidth);
+	std::cout << Score;
 	Carriage(TabHeight + 1, 0);
 
+	_getch();
+
+	// Anti 'close game by accident' //
+
+	Sleep(500);
 	_getch();
 
     return 0;

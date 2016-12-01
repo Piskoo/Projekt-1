@@ -40,6 +40,7 @@ char TopLeftCorner = 201;
 char TopRightCorner = 187;
 char BottomLeftCorner = 200;
 char BottomRightCorner = 188;
+char FoodCode = 178;
 
 int main() 
 {
@@ -86,7 +87,7 @@ int main()
 		for (int j = 0; j < TabWidth; j++) { // Space between borders - play field //
 			if (GameTab[i][j] == "empty") std::cout << "  "; // Filling board with empty spaces //
 			if (GameTab[i][j] == "snake") std::cout << SnakeCode << SnakeCode; // Filling board with snake fields //
-			if (GameTab[i][j] == "food") std::cout << "XX"; // Filling board with food field //
+			if (GameTab[i][j] == "food") std::cout << FoodCode << FoodCode; // Filling board with food field //
 
 		}
 		std::cout << LeftRightBorder; // Right border //
@@ -116,17 +117,17 @@ int main()
 			} while (GameTab[FoodTabHeight][FoodTabWidth] != "empty"); // Cannot roll same height and width as snake //
 
 			GameTab[FoodTabHeight][FoodTabWidth] = "food"; // Filling one field with word 'food' //
-			Carriage(FoodTabHeight + 1, FoodTabWidth * 2 + 1);
-			std::cout << "XX";
+			Carriage(FoodTabHeight + 1, FoodTabWidth * 2 + 1); // Overwrite old values with food //
+			std::cout << FoodCode << FoodCode;
 			
 		}
 
 		GameTab[SnakePointHeight][SnakePointWidth] = "snake"; // First segment of snake, it's head //
-		Carriage(SnakePointHeight + 1, SnakePointWidth * 2 + 1);
+		Carriage(SnakePointHeight + 1, SnakePointWidth * 2 + 1); // Overwrite old values with snake //
 		std::cout << SnakeCode << SnakeCode;
 
 		GameTab[OldSnakeHeight[SnakeMoves - SnakeLength]][OldSnakeWidth[SnakeMoves - SnakeLength]] = "empty"; // Old coordinates should be empty when snake moves //
-		Carriage(OldSnakeHeight[SnakeMoves - SnakeLength] + 1, OldSnakeWidth[SnakeMoves - SnakeLength] * 2 + 1);
+		Carriage(OldSnakeHeight[SnakeMoves - SnakeLength] + 1, OldSnakeWidth[SnakeMoves - SnakeLength] * 2 + 1); // Overwrite old values with double empty space //
 		std::cout << "  ";
 		Sleep(100);
 
@@ -157,6 +158,16 @@ int main()
 		if (GameTab[SnakePointHeight][SnakePointWidth] == "snake") break; // Eats itself // 
 
 	}
+
+	// Game over messages //
+
+	Carriage(TabHeight - 13, TabWidth - 3);
+	std::cout << "GAME OVER";
+	Carriage(TabHeight - 12, TabWidth - 1);
+	std::cout << "SCORE";
+	Carriage(TabHeight - 11, TabWidth + 1);
+	std::cout << SnakeLength;
+	Carriage(TabHeight + 1, 0);
 
 	_getch();
 
